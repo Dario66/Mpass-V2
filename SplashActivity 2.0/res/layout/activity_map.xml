@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+   	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" 
+	android:layout_height="match_parent"
+	android:id="@+id/mapView"
+	android:name="com.example.fstest.MapActivity"
+	android:weightSum="4"
+	android:orientation="vertical"
+	android:nextFocusDown="@+id/btn_quiz">
+
+	<org.osmdroid.views.MapView
+	    android:id="@+id/openmapview"
+	    android:name="com.google.android.gms.maps.MapFragment"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" 
+	    android:layout_weight="1"/>
+
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_weight="3" >
+
+		<Button
+		    android:id="@+id/btn_notification"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_marginLeft="10dp"
+		    android:layout_marginTop="5dp"
+		    android:visibility="invisible"
+		    android:text="Quiz" 
+		    android:maxWidth="200dp"
+		    style="@style/customButton"
+		    android:contentDescription="Compila una segnalazione riguardo al luogo più vicino alla tua locazione"
+		    android:focusable="true"
+		    android:nextFocusRight="@+id/btn_quiz"/>
+	    
+		<ImageButton
+		    android:id="@+id/btn_quiz"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@drawable/ic_quiz" 
+		    android:scaleType="fitXY"
+		    android:background="@null"
+		    android:layout_centerInParent="true"
+		    android:contentDescription="Crea una segnalazione riguardo ad un luogo"
+		    android:nextFocusLeft="@id/btn_notification"
+		    android:focusable="true"
+		    />
+		
+	</RelativeLayout>
+
+</LinearLayout>
