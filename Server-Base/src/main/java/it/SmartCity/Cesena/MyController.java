@@ -5,11 +5,32 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /*@COntroller permette di abilitare l'ascolto nel dispatcher Servlet ,
@@ -27,7 +48,7 @@ public class MyController {
 		 
 		 
 		 //PROVA DI CONNESSIONE CON JDBC CON QUERY
-		 Connection connection=null;
+		/* Connection connection=null;
 	  	    
 	  	    connection = DriverManager.getConnection(
 	  				"jdbc:postgresql://localhost:5432/postgres", "postgres",
@@ -39,60 +60,77 @@ public class MyController {
 	  	        System.out.println(rs.getString(4)+"_"+rs.getString(1));
 	  	    }
 	  	    rs.close();
-	  	    st.close();
+	  	    st.close();*/
 			return "qualcosa";
 		}
 	// Normalmente GET è utilizzato per richiedere piccole quantità di dati 
 	// mentre POST per quantità piu importanti(come filmati, audio etc.)
-	
-	
-	
-	
-	
-	
-	
-	
-	//ricordarsi di scrivere lo stesso path anche nella richiesta nel client.
-	//la variabile title deve essere la stessa passata al server
-	@RequestMapping(value="/prova/passaggioparametri", method=RequestMethod.GET)
-	    public @ResponseBody String get(
+	 
+	 
+	 @RequestMapping(value="/locazione/getposti", method=RequestMethod.GET)
+	    public @ResponseBody Collection<String> getAllGeo(
+	    		/*@RequestParam("stringa") String stringa*/
+	    		) throws SQLException {
+		 
+		 
+		 ArrayList<String> Location= new ArrayList<>();
+		 ArrayList<String> NameLoc = new ArrayList<>();
+		// if(stringa=="ok"){
+		 
+			 Connection connection=null;
+		  	    
+		  	    connection = DriverManager.getConnection(
+		  				"jdbc:postgresql://localhost:5432/postgres", "postgres",
+		  				"postgres");
+		  	    Statement st = connection.createStatement();
+		  	    ResultSet rs = st.executeQuery("select geo,name from mastertable");
+		  	    while (rs.next()) {
+		  	        //System.out.print("Column 4 _ Column 1 ");
+		  	        System.out.println(rs.getString(1));
+		  	        Location.add(0,rs.getString(1));
+		  	        //NameLoc.add(rs.getString(1));
+		  	        
+		  	        
+		  	        
+		  	    }
+		  	    
+		  	    
+		  	    rs.close();
+		  	    st.close();
+			 
+			 
+		 
+		 
+		// Collection<String> list =new ArrayList<String>();
+		//add some stuff
+		//list.add("android");
+		//list.add("apple");
+		 
+		 
+			return Location;
+		// }
+		// return null;
+		}
+	 
+	 @RequestMapping(value="/prova/passaggioparametri", method=RequestMethod.GET)
+	    public @ResponseBody /*Collection<String>*/String get(
 	    		@RequestParam ("title")String ciao
 	    		) {
-		 //controlla che sia stato inviata una Stringa contenente "ok"
+		 
 		 if(ciao.compareTo("ok")==0){
-		/* Collection<String> list =new ArrayList<String>();
+		 
+		 
+		 Collection<String> list =new ArrayList<String>();
 		//add some stuff
 		list.add("android");
-		list.add("apple");*/
-		
-			return "va bene"; //list;
+		list.add("apple");
+		 
+		 
+			return "vabene"; //list;
 		 }
 		 return "non va bene";//null;
 		}
-		/*nell'activity dell'app si può aggiungere il seguente codice dentro la funzione
-		sarà inviata la richiesta con un parametro di tipo String per poi ritornare una Stringa.
-		
-		try{
-		String s = videoSvc.get("ok");
-		ciao.setText(s.toString());
-		 
-		}catch(Exception e){
-			ciao.setText(e.toString());
-			Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
-		}
-		 nella ClientSvcApi inserire la richiesta:
-		 
-		 
-		 @GET("/prova/passaggioparametri")
-		  public String get(@Query("title") String title);
-		  
-		  
-		  
-		  
-		*/
-		
-		
-		
-		
-		
+	 
+	 
+	 
 }
