@@ -1,4 +1,5 @@
 package it.project.main;
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -9,6 +10,7 @@ import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.Part;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 import retrofit.mime.TypedFile;
 public interface ClientSvcApi {
@@ -34,9 +36,12 @@ public interface ClientSvcApi {
 	
 	
 	
-	@GET(VIDEO_SVC_PATH)
+	@GET("/pagina1")
 	public String getVideoList();
 	
-	
+	@GET("/locazione/getposti")
+	public ArrayList<String> getAllLocation(/*@Query("stringa")String prova*/);
+	@GET("/prova/passaggioparametri")
+	public String gets(@Query("stringa")String prova);
 	
 }

@@ -20,7 +20,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="fill_parent"
 	    android:layout_weight="3"
-	    style="@style/" >
+	    >
 
 		<Button
 		    android:id="@+id/btn_notification"

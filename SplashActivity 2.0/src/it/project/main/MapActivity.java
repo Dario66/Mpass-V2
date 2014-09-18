@@ -2,12 +2,15 @@ package it.project.main;
 
 import it.project.main.utils.GPSTracker;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
+import org.osmdroid.views.overlay.ItemizedIconOverlay.OnItemGestureListener;
 import com.example.fstest.R;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -17,6 +20,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -58,7 +63,7 @@ import android.widget.Toast;
 public class MapActivity extends Activity
 {
 
-	private static final String SERVER = "http://192.168.1.102:8080";
+	private static final String SERVER = "http://192.168.26.1:8080";
 	private static final String SERVER2 = "https://10.100.107.198:8443";
 	ProgressBar progressBar;
     
@@ -79,8 +84,8 @@ public class MapActivity extends Activity
 	//private GoogleMap mMap;
 	private MapView myOpenMapView;
 	private MapController myMapController;
-	ArrayList<OverlayItem> anotherOverlayItemArray;
 	
+	ArrayList<OverlayItem> Marker;
 	MyLocationOverlay myLocationOverlay = null;
 	
 	//private ProgressDialog spinner;
@@ -89,7 +94,14 @@ public class MapActivity extends Activity
     private Button btn_notif;
     private TextView tv_notif;
     
-    
+    ArrayList<String> sfornato;
+	double lon;
+	double lat;
+
+	double q=1.12332;
+
+	double yr=0;
+	double yr2=0;
     
     
     @TargetApi(Build.VERSION_CODES.GINGERBREAD) 
@@ -98,24 +110,20 @@ public class MapActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
-        
-       
+        setContentView(R.layout.activity_map);
         StrictMode.ThreadPolicy policy = 
         		new StrictMode.ThreadPolicy.Builder().permitAll().build();
         	StrictMode.setThreadPolicy(policy);
         
         
-        
-        
-        
-        
-        
-        
-        
-        
+        	 myOpenMapView = (MapView)findViewById(R.id.openmapview);
+             myOpenMapView.setBuiltInZoomControls(true);
+             myMapController = myOpenMapView.getController();
+             myMapController.setZoom(2);
+             myOpenMapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
         
         context=this;
-        setContentView(R.layout.activity_map);
+        
         
         preferences=new boolean[3];
         preferences[0]=true; //Accessibile
@@ -133,49 +141,183 @@ public class MapActivity extends Activity
 			{
 				//Intent i=new Intent(MapActivity.this, NearbyActivity.class);
 				//startActivity(i);
-				
-				
-				
 				//RICHIESTA HTTP PER RICEVERE I DATI DI GEOLOCALIZAZZIONE SOTTOFORMA DI STRINGHE
 				//QUESTO ESEMPIO RICEVE UNA STRINGA
-				try{
+		/*		try{
 			String s = videoSvc.getVideoList();
 			//ciao.setText(s.toString());
 			Toast.makeText(getApplicationContext(),s.toString(), Toast.LENGTH_SHORT).show();
 			}catch(Exception e){
 				//ciao.setText(e.toString());
 				Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
-			}
-		
+			}*/
 				
+				//tu(arg0);
+				try{
+					sfornato=videoSvc.getAllLocation(); 
+					Toast.makeText(getApplicationContext(), "si", Toast.LENGTH_SHORT).show();
+					}catch(Exception e){
+						//ciao.setText(e.toString());
+						Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
+					}
+				//Toast.makeText(getApplicationContext(), ""+sfornato.get(2).toString()+"", Toast.LENGTH_SHORT).show();
+				for (String e : sfornato) {
+					
+					
+					ArrayList<Double> ex=tu(e);
+					lon=ex.get(0);
+					lat=ex.get(1);
+					
+					 Marker = new ArrayList<OverlayItem>();
+			         Marker.add(new OverlayItem(
+			         		"0, 0", "0, 0", new GeoPoint(lat, lon)));
+			         ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay 
+				     	= new ItemizedIconOverlay<OverlayItem>(
+				     			MapActivity.this, Marker, myOnItemGestureListener);
+				     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
+				     ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(MapActivity.this);
+				     myOpenMapView.getOverlays().add(myScaleBarOverlay);
+				     
+				     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
+				     myOpenMapView.getOverlays().add(myLocationOverlay);
+				     myOpenMapView.postInvalidate();
+					//Add MyLocationOverlay
+			    	//GPSTracker gps = new GPSTracker(MapActivity.this);
+					//inserire marker
+				}//fine for
+				 
+			     //---
+			     
+			     //Add Scale Bar
+			     
+			     
+			    
 				
-				
-				
-				
-			}
+				}
+			
 		});
 		
 		
+		 
+		 myOpenMapView = (MapView)findViewById(R.id.openmapview);
+	        myOpenMapView.setBuiltInZoomControls(true);
+	        myMapController = myOpenMapView.getController();
+	        myMapController.setZoom(3);
+	        
+	        myOpenMapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
+
 		
         gps=new GPSTracker(this);
       
         //MAPPA OPEN STREET MAP
         
-        
-        
-        myOpenMapView = (MapView)findViewById(R.id.openmapview);
-        myOpenMapView.setBuiltInZoomControls(true);
-        myMapController = myOpenMapView.getController();
-        myMapController.setZoom(2);
-        
-        myOpenMapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
-        
-        //Questo codice permette di far vedere sulla mappa solo i luoghi vicini presenti nella fusion table
-    
+           
         ViewGroup mapHost = (ViewGroup) findViewById(R.id.mapView);
         mapHost.requestTransparentRegion(mapHost);
     }
     
+    
+    
+    OnItemGestureListener<OverlayItem> myOnItemGestureListener
+    = new OnItemGestureListener<OverlayItem>(){
+
+		@Override
+		public boolean onItemLongPress(int arg0, OverlayItem arg1) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean onItemSingleTapUp(int arg0, OverlayItem arg1) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+    };
+    //funzione per LOCALIZZAZIONE
+    public String ConvertPointToLocation(GeoPoint point) {   
+        String address = "";
+        Geocoder geoCoder = new Geocoder( getBaseContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = geoCoder.getFromLocation(
+                point.getLatitudeE6()  / 1E6, 
+                point.getLongitudeE6() / 1E6, 1);
+
+            if (addresses.size() > 0) {
+                for (int index = 0; index < addresses.get(0).getMaxAddressLineIndex(); index++)
+                    address += addresses.get(0).getAddressLine(index) + " ";
+            }
+
+
+            Toast.makeText(getBaseContext(), address, Toast.LENGTH_SHORT).show();
+
+        }
+        catch (IOException e) {                
+            e.printStackTrace();
+        }   
+
+        return address;
+    } 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+	
+	//PROCEDURA CHE RICEVE UNA STRINGA IN INGRESSO DEL TIPO 123.543,123.123
+	// UNA PARTE DELLA FUNZIONE ESTRAPOLA LA PARTE PRIMA DELLA VIRGOLA E LA CONVERTE IN DOUBLE
+	//POI AL SUPERAMENTO DELLA VIRGOLA RICAVA L'ALTRA VIENE CREAATO UN aRRAYlIST<dOUBLE> PER 
+	//PASSARE I RISPETTIVI lat e long 
+    public ArrayList<Double> tu(String a){
+   	// String a="(12.345,67.8933)";
+   	
+   		String com="";
+   		int sblocca=0;
+   		int y=0;
+   		
+   		
+   		String j="",j2="";
+   		char[] intArray = new char[30];
+   		char[] intArray2 = new char[30];
+   		
+   				for(int s=0;s<a.length();s++){
+   					
+   					com=""+a.charAt(s);
+   				if(com.compareTo("(")==0||com.compareTo(")")==0){}
+   				else{
+   					if(com.compareTo(",")==0){
+   						sblocca=1;
+   						
+   					}else{
+   					if(sblocca==1){
+   						
+   						
+   						j2=j2+""+a.charAt(s);
+   						y++;
+   					}
+   					else{
+   						j=j+""+a.charAt(s);
+   					}
+   				
+   					}//else
+   					
+   				}
+   				
+   		}
+   				yr2 = Double.parseDouble(j);
+   				yr= Double.parseDouble(j2);
+   				ArrayList<Double> piu=new ArrayList<Double>();
+   				
+   				piu.add(0,yr);//inseriamo in posizione 1 e 2 per poi estrapolarli correttamente da lato client
+   				piu.add(1,yr2);
+   				//Toast.makeText(this, ""+yr2+" "+yr+"", Toast.LENGTH_SHORT).show();
+   				return piu;
+   	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -227,7 +369,22 @@ public class MapActivity extends Activity
         return true;
     }
 
-   
+    @Override
+   	protected void onResume() {
+   		// TODO Auto-generated method stub
+   		super.onResume();
+   		//myLocationOverlay.enableMyLocation();
+   		//myLocationOverlay.enableCompass();
+   	}
+
+   	@Override
+   	protected void onPause() {
+   		// TODO Auto-generated method stub
+   		super.onPause();
+   		//myLocationOverlay.disableMyLocation();
+   		//myLocationOverlay.disableCompass();
+   	}
+
     //Procedura per settare i marker dei luoghi nella mappa
    /* public void setMarkers(JSONArray venues)
     {
