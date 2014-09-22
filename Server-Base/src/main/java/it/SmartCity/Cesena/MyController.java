@@ -40,29 +40,27 @@ public class MyController {
 
 	//Richiesta GET
 	//@Request Mapping mappa la richiesta attraverso il metodo specificato
-	 @RequestMapping(value="/pagina1", method=RequestMethod.GET)
+	 @RequestMapping(value="/Login", method=RequestMethod.GET)
 	 //Response Body Converte Automaticamente il valore di ritorno
 	 //della funzione da Oggetto a Json(Setta il Content Type a seconda del Client usato:
 	 //text/Html per pagine Web e text/plain per applicazioni mobile)
-	    public @ResponseBody String getVideoList() throws SQLException {
+	    public @ResponseBody String getVideoList(@RequestParam("para") String id) throws SQLException {
 		 
-		 
-		 //PROVA DI CONNESSIONE CON JDBC CON QUERY
-		/* Connection connection=null;
-	  	    
-	  	    connection = DriverManager.getConnection(
-	  				"jdbc:postgresql://localhost:5432/postgres", "postgres",
-	  				"postgres");
-	  	    Statement st = connection.createStatement();
-	  	    ResultSet rs = st.executeQuery("SELECT * FROM mastertable");
-	  	    while (rs.next()) {
-	  	        //System.out.print("Column 4 _ Column 1 ");
-	  	        System.out.println(rs.getString(4)+"_"+rs.getString(1));
-	  	    }
-	  	    rs.close();
-	  	    st.close();*/
-			return "qualcosa";
-		}
+		/* if(id.compareTo("ciao")==0){
+			return "qualcosa";}
+		 else if(id.compareTo("ciao2")==0){
+			 
+			 return "qualcosa no";
+		 }*/
+		 String b=id;
+		 if(b.compareTo("ciao123")==0){
+			 return "Login_OK";
+		 }
+		 else{
+		//return ""+ id +"";
+			 return "Errore_Login";
+	 }
+	 }
 	// Normalmente GET è utilizzato per richiedere piccole quantità di dati 
 	// mentre POST per quantità piu importanti(come filmati, audio etc.)
 	 
@@ -112,26 +110,31 @@ public class MyController {
 		// return null;
 		}
 	 
-	 @RequestMapping(value="/pagina1/param", method=RequestMethod.GET)
-	 //Response Body Converte Automaticamente il valore di ritorno
-	 //della funzione da Oggetto a Json(Setta il Content Type a seconda del Client usato:
-	 //text/Html per pagine Web e text/plain per applicazioni mobile)
-	    public @ResponseBody String getParam(@RequestParam("para") String id) throws SQLException {
+	 @RequestMapping(value="/passaggioparametri", method=RequestMethod.GET)
+	    public @ResponseBody /*Collection<String>*/String get(
+	    		@RequestParam ("title")String ciao
+	    		) throws SQLException{
 		 
-		/* if(id.compareTo("ciao")==0){
-			return "qualcosa";}
-		 else if(id.compareTo("ciao2")==0){
-			 
-			 return "qualcosa no";
-		 }*/
-		 String b=id;
-		 if(b.compareTo("ciao123")==0){
-			 return "hi inviato ciao123";
+		 if(ciao.compareTo("ok")==0){
+		 
+		 
+		 Collection<String> list =new ArrayList<String>();
+		//add some stuff
+		list.add("android");
+		list.add("apple");
+		 
+		 
+			return "vabene"; //list;
 		 }
-		 else{
-		return ""+ id +"";
-	 }
-	 }
+		 return "non va bene";//null;
+		}
+	 
+	 
+		@RequestMapping(value="/pag1", method=RequestMethod.GET)
+		public @ResponseBody String simpleGet()throws SQLException {
+			// Strings aren't auto-converted to JSON
+			return "You called simpleGet";
+		}
 	 
 	 
 	 

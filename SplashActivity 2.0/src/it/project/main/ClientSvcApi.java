@@ -42,17 +42,10 @@ public interface ClientSvcApi {
 	@GET("/locazione/getposti")
 	public ArrayList<String> getAllLocation(/*@Query("stringa")String prova*/);
 	
-	@GET("/pagina1/param")
-	public String getParam(@Query("para") String id);
+	@GET("/prova/passaggioparametri")
+	public String gets(@Query("stringa")String prova);
 	
-	/*
-	per testarla aggiungere nell'activity di interesse il seguente codice:
-	try{
-		String a = videoSvc.getParam("ciao123");
-		ciao.setText(a.toString());//imposto la textview per il risultato , oppure si puo usare altro come toast..
-	}catch(Exception e){
-		ciao.setText(e.toString());
-	}
-	*/
+	@GET("/Login")
+	public String getLogin(@Query("para") String id);
 	
 }

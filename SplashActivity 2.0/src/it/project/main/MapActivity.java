@@ -63,7 +63,7 @@ import android.widget.Toast;
 public class MapActivity extends Activity
 {
 
-	private static final String SERVER = "http://192.168.26.1:8080";
+	private static final String SERVER = "http://192.168.1.102:8080";
 	private static final String SERVER2 = "https://10.100.107.198:8443";
 	ProgressBar progressBar;
     
@@ -121,6 +121,12 @@ public class MapActivity extends Activity
              myMapController = myOpenMapView.getController();
              myMapController.setZoom(2);
              myOpenMapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
+           
+             myLocationOverlay = new MyLocationOverlay(this, myOpenMapView);
+             
+             
+             myOpenMapView.getOverlays().add(myLocationOverlay);
+             myOpenMapView.postInvalidate();
         
         context=this;
         
@@ -139,8 +145,8 @@ public class MapActivity extends Activity
 			@Override
 			public void onClick(View arg0) 
 			{
-				//Intent i=new Intent(MapActivity.this, NearbyActivity.class);
-				//startActivity(i);
+				Intent i=new Intent(MapActivity.this, QuizActivity.class);
+				startActivity(i);
 				//RICHIESTA HTTP PER RICEVERE I DATI DI GEOLOCALIZAZZIONE SOTTOFORMA DI STRINGHE
 				//QUESTO ESEMPIO RICEVE UNA STRINGA
 		/*		try{
@@ -153,45 +159,7 @@ public class MapActivity extends Activity
 			}*/
 				
 				//tu(arg0);
-				try{
-					sfornato=videoSvc.getAllLocation(); 
-					Toast.makeText(getApplicationContext(), "si", Toast.LENGTH_SHORT).show();
-					}catch(Exception e){
-						//ciao.setText(e.toString());
-						Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
-					}
-				//Toast.makeText(getApplicationContext(), ""+sfornato.get(2).toString()+"", Toast.LENGTH_SHORT).show();
-				for (String e : sfornato) {
-					
-					
-					ArrayList<Double> ex=tu(e);
-					lon=ex.get(0);
-					lat=ex.get(1);
-					
-					 Marker = new ArrayList<OverlayItem>();
-			         Marker.add(new OverlayItem(
-			         		"0, 0", "0, 0", new GeoPoint(lat, lon)));
-			         ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay 
-				     	= new ItemizedIconOverlay<OverlayItem>(
-				     			MapActivity.this, Marker, myOnItemGestureListener);
-				     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
-				     ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(MapActivity.this);
-				     myOpenMapView.getOverlays().add(myScaleBarOverlay);
-				     
-				     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
-				     myOpenMapView.getOverlays().add(myLocationOverlay);
-				     myOpenMapView.postInvalidate();
-					//Add MyLocationOverlay
-			    	//GPSTracker gps = new GPSTracker(MapActivity.this);
-					//inserire marker
-				}//fine for
-				 
-			     //---
-			     
-			     //Add Scale Bar
-			     
-			     
-			    
+			
 				
 				}
 			
@@ -350,10 +318,77 @@ public class MapActivity extends Activity
 										{
 											case R.id.item_all:
 															   //spinner.show();
-			        						   				   
+												try{
+													sfornato=videoSvc.getAllLocation(); 
+													}catch(Exception e){
+														//ciao.setText(e.toString());
+														Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
+													}
+												for (String e : sfornato) {
+													ArrayList<Double> ex=tu(e);
+													lon=ex.get(0);
+													lat=ex.get(1);
+													
+													 Marker = new ArrayList<OverlayItem>();
+											         Marker.add(new OverlayItem(
+											         		"0, 0", "0, 0", new GeoPoint(lat, lon)));
+											         ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay 
+												     	= new ItemizedIconOverlay<OverlayItem>(
+												     			MapActivity.this, Marker, myOnItemGestureListener);
+												     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
+												     ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(MapActivity.this);
+												     myOpenMapView.getOverlays().add(myScaleBarOverlay);
+											         
+												     
+												}
+										     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
+										     myOpenMapView.getOverlays().add(myLocationOverlay);
+										     myOpenMapView.postInvalidate();
 															   break;
 											case R.id.item_limit:
 																
+												
+												
+												
+												
+												try{
+													sfornato=videoSvc.getAllLocation(); 
+													Toast.makeText(getApplicationContext(), "si", Toast.LENGTH_SHORT).show();
+													}catch(Exception e){
+														//ciao.setText(e.toString());
+														Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
+													}
+												//Toast.makeText(getApplicationContext(), ""+sfornato.get(2).toString()+"", Toast.LENGTH_SHORT).show();
+												int conta=0;
+												for (String e : sfornato) {
+													if(conta==20){break;}
+												
+													
+													ArrayList<Double> ex=tu(e);
+													lon=ex.get(0);
+													lat=ex.get(1);
+													
+													 Marker = new ArrayList<OverlayItem>();
+											         Marker.add(new OverlayItem(
+											         		"0, 0", "0, 0", new GeoPoint(lat, lon)));
+											         ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay 
+												     	= new ItemizedIconOverlay<OverlayItem>(
+												     			MapActivity.this, Marker, myOnItemGestureListener);
+												     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
+												     ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(MapActivity.this);
+												     myOpenMapView.getOverlays().add(myScaleBarOverlay);
+											         
+												     conta =conta+1;
+												}
+										     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
+										     myOpenMapView.getOverlays().add(myLocationOverlay);
+										     myOpenMapView.postInvalidate();
+											    
+												
+												
+												
+												
+												
 													break;
 										}
 										return false;
