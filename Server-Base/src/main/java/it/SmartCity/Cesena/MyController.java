@@ -112,24 +112,26 @@ public class MyController {
 		// return null;
 		}
 	 
-	 @RequestMapping(value="/prova/passaggioparametri", method=RequestMethod.GET)
-	    public @ResponseBody /*Collection<String>*/String get(
-	    		@RequestParam ("title")String ciao
-	    		) {
+	 @RequestMapping(value="/pagina1/param", method=RequestMethod.GET)
+	 //Response Body Converte Automaticamente il valore di ritorno
+	 //della funzione da Oggetto a Json(Setta il Content Type a seconda del Client usato:
+	 //text/Html per pagine Web e text/plain per applicazioni mobile)
+	    public @ResponseBody String getParam(@RequestParam("para") String id) throws SQLException {
 		 
-		 if(ciao.compareTo("ok")==0){
-		 
-		 
-		 Collection<String> list =new ArrayList<String>();
-		//add some stuff
-		list.add("android");
-		list.add("apple");
-		 
-		 
-			return "vabene"; //list;
+		/* if(id.compareTo("ciao")==0){
+			return "qualcosa";}
+		 else if(id.compareTo("ciao2")==0){
+			 
+			 return "qualcosa no";
+		 }*/
+		 String b=id;
+		 if(b.compareTo("ciao123")==0){
+			 return "hi inviato ciao123";
 		 }
-		 return "non va bene";//null;
-		}
+		 else{
+		return ""+ id +"";
+	 }
+	 }
 	 
 	 
 	 
