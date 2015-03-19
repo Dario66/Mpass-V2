@@ -38,7 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class MyController {
 
-	//Richiesta GET
+	//Richiesta GETsdsdsdiiiiii
 	//@Request Mapping mappa la richiesta attraverso il metodo specificato
 	 @RequestMapping(value="/Login", method=RequestMethod.GET)
 	 //Response Body Converte Automaticamente il valore di ritorno
