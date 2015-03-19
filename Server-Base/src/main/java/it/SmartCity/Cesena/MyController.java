@@ -62,7 +62,7 @@ public class MyController {
 	 }
 	 }
 	// Normalmente GET è utilizzato per richiedere piccole quantità di dati 
-	// mentre POST per quantità piu importanti(come filmati, audio etc.)
+	// mentre POST per quantità piu importanti(come filmati, audio etc.)dsddddd
 	 
 	 
 	 @RequestMapping(value="/locazione/getposti", method=RequestMethod.GET)
