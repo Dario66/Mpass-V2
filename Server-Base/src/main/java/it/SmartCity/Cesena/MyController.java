@@ -109,7 +109,7 @@ public class MyController {
 		// }
 		// return null;
 		}
-	 
+	 //utilizzato postgresql-9.3-1102.jdbc4
 	 @RequestMapping(value="/passaggioparametri", method=RequestMethod.GET)
 	    public @ResponseBody /*Collection<String>*/String get(
 	    		@RequestParam ("title")String ciao
