@@ -62,7 +62,7 @@ import android.widget.Toast;
 @TargetApi(Build.VERSION_CODES.GINGERBREAD) @SuppressLint("NewApi") 
 public class MapActivity extends Activity
 {
-
+//kkkk
 	private static final String SERVER = "http://192.168.1.102:8080";
 	private static final String SERVER2 = "https://10.100.107.198:8443";
 	ProgressBar progressBar;
