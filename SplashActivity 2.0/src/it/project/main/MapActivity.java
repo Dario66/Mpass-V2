@@ -4,6 +4,7 @@ import it.project.main.utils.GPSTracker;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -63,7 +64,7 @@ import android.widget.Toast;
 public class MapActivity extends Activity
 {
 //kkkk
-	private static final String SERVER = "http://192.168.1.102:8080";
+	private static final String SERVER = "192.168.1.105:8080";
 	private static final String SERVER2 = "https://10.100.107.198:8443";
 	ProgressBar progressBar;
     
@@ -71,10 +72,10 @@ public class MapActivity extends Activity
 
 	TextView ciao;
 	
-	private ClientSvcApi videoSvc = new RestAdapter.Builder()
+	/*private ClientSvcApi videoSvc = new RestAdapter.Builder()
 	
 	.setServer(SERVER).build()
-	.create(ClientSvcApi.class);
+	.create(ClientSvcApi.class);*/
 	
 	
 	
@@ -317,8 +318,17 @@ public class MapActivity extends Activity
 										switch (item.getItemId()) 
 										{
 											case R.id.item_all:
+												
+												TextView t = null;
+												new TaskHttp(MapActivity.this) {
+													
+												    public void onPostExecute(String result) {
+												    	Toast.makeText(MapActivity.this, result.toString(), Toast.LENGTH_LONG).show();
+												    	Glob.statusDialog.dismiss();
+												     }
+												}.execute(t);
 															   //spinner.show();
-												try{
+												/*try{
 													sfornato=videoSvc.getAllLocation(); 
 													}catch(Exception e){
 														//ciao.setText(e.toString());
@@ -344,15 +354,15 @@ public class MapActivity extends Activity
 										     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
 										     myOpenMapView.getOverlays().add(myLocationOverlay);
 										     myOpenMapView.postInvalidate();
-															   break;
+															   break;*/
 											case R.id.item_limit:
 																
 												
 												
-												
+												//richiesta http
 												
 												try{
-													sfornato=videoSvc.getAllLocation(); 
+													//sfornato=videoSvc.getAllLocation(); 
 													Toast.makeText(getApplicationContext(), "si", Toast.LENGTH_SHORT).show();
 													}catch(Exception e){
 														//ciao.setText(e.toString());
