@@ -82,12 +82,17 @@ public class MapActivity extends Activity
 	
 	
 	private GPSTracker gps;
-	//private GoogleMap mMap;
+	
+	
+	
+	
 	private MapView myOpenMapView;
 	private MapController myMapController;
 	
-	ArrayList<OverlayItem> Marker;
-	MyLocationOverlay myLocationOverlay = null;
+	
+	
+	private ArrayList<OverlayItem> Marker;
+	private MyLocationOverlay myLocationOverlay = null;
 	
 	//private ProgressDialog spinner;
     private Context context;
@@ -122,10 +127,9 @@ public class MapActivity extends Activity
              myMapController = myOpenMapView.getController();
              myMapController.setZoom(2);
              myOpenMapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
-           
-             myLocationOverlay = new MyLocationOverlay(this, myOpenMapView);
              
              
+             myLocationOverlay = new MyLocationOverlay (this, myOpenMapView);  
              myOpenMapView.getOverlays().add(myLocationOverlay);
              myOpenMapView.postInvalidate();
         
@@ -148,6 +152,11 @@ public class MapActivity extends Activity
 			{
 				Intent i=new Intent(MapActivity.this, QuizActivity.class);
 				startActivity(i);
+				
+				
+				
+				
+				
 				//RICHIESTA HTTP PER RICEVERE I DATI DI GEOLOCALIZAZZIONE SOTTOFORMA DI STRINGHE
 				//QUESTO ESEMPIO RICEVE UNA STRINGA
 		/*		try{
@@ -243,48 +252,32 @@ public class MapActivity extends Activity
 	//POI AL SUPERAMENTO DELLA VIRGOLA RICAVA L'ALTRA VIENE CREAATO UN aRRAYlIST<dOUBLE> PER 
 	//PASSARE I RISPETTIVI lat e long 
     public ArrayList<Double> tu(String a){
-   	// String a="(12.345,67.8933)";
-   	
    		String com="";
-   		int sblocca=0;
-   		int y=0;
-   		
-   		
+   		int sblocca=0,y = 0;
    		String j="",j2="";
-   		char[] intArray = new char[30];
-   		char[] intArray2 = new char[30];
-   		
    				for(int s=0;s<a.length();s++){
-   					
    					com=""+a.charAt(s);
    				if(com.compareTo("(")==0||com.compareTo(")")==0){}
    				else{
    					if(com.compareTo(",")==0){
    						sblocca=1;
-   						
    					}else{
    					if(sblocca==1){
-   						
-   						
    						j2=j2+""+a.charAt(s);
    						y++;
    					}
    					else{
    						j=j+""+a.charAt(s);
+   					 }
    					}
-   				
-   					}//else
-   					
    				}
-   				
    		}
    				yr2 = Double.parseDouble(j);
    				yr= Double.parseDouble(j2);
    				ArrayList<Double> piu=new ArrayList<Double>();
    				
-   				piu.add(0,yr);//inseriamo in posizione 1 e 2 per poi estrapolarli correttamente da lato client
+   				piu.add(0,yr);
    				piu.add(1,yr2);
-   				//Toast.makeText(this, ""+yr2+" "+yr+"", Toast.LENGTH_SHORT).show();
    				return piu;
    	}
     @Override
@@ -294,20 +287,25 @@ public class MapActivity extends Activity
         inflater.inflate(R.menu.map, menu);
     	return true;
     }
-    
+    TextView t ;
     public boolean onOptionsItemSelected(MenuItem item) 
     {
         switch (item.getItemId()) 
         {
-        	case R.id.item_filter:showFilterDialog();
+        	case R.id.item_filter:
+        		
+        		new TaskHttp(MapActivity.this,0){
+				
+			    public void onPostExecute(ArrayList<String> result) {
+			    	Toast.makeText(MapActivity.this, ""+result.get(0).toString()+"", Toast.LENGTH_LONG).show();
+			    	Glob.statusDialog.dismiss();
+			     }
+			}.execute(t);
         					      break;
         	case R.id.item_mapmenu:Intent profile_intent=new Intent(MapActivity.this, ProfileActivity.class);
         						   startActivity(profile_intent);
         						   break;
-        	case R.id.item_refresh:/*spinner.show();
-        						   ftclient.setQuery(query_all);
-            					   ftclient.queryOnNewThread("setmarkers");*/
-        						   PopupMenu popup=new PopupMenu(MapActivity.this, findViewById(item.getItemId()));
+        	case R.id.item_refresh:PopupMenu popup=new PopupMenu(MapActivity.this, findViewById(item.getItemId()));
         						   MenuInflater inflater=popup.getMenuInflater();
         						   inflater.inflate(R.menu.refresh, popup.getMenu());
         						   popup.setOnMenuItemClickListener(new OnMenuItemClickListener() 
@@ -319,11 +317,11 @@ public class MapActivity extends Activity
 										{
 											case R.id.item_all:
 												
-												TextView t = null;
-												new TaskHttp(MapActivity.this) {
+												
+												new TaskHttp(MapActivity.this,0){
 													
 												    public void onPostExecute(String result) {
-												    	Toast.makeText(MapActivity.this, result.toString(), Toast.LENGTH_LONG).show();
+												    	Toast.makeText(MapActivity.this, ""+result+"", Toast.LENGTH_LONG).show();
 												    	Glob.statusDialog.dismiss();
 												     }
 												}.execute(t);

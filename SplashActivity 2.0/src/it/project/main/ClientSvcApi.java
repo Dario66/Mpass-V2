@@ -16,11 +16,8 @@ import retrofit.mime.TypedFile;
 public interface ClientSvcApi {
 
 	public static final String DATA_PARAMETER = "data";
-
 	public static final String ID_PARAMETER = "id";
-
 	public static final String VIDEO_SVC_PATH = "/video";
-	
 	public static final String VIDEO_DATA_PATH = VIDEO_SVC_PATH + "/{id}/data";
 
 	/**
@@ -36,7 +33,7 @@ public interface ClientSvcApi {
 	
 	
 	
-	@GET("/pagina1")
+	@GET("/pag1")
 	public String getVideoList();
 	
 	@GET("/locazione/getposti")
@@ -46,6 +43,6 @@ public interface ClientSvcApi {
 	public String gets(@Query("stringa")String prova);
 	
 	@GET("/Login")
-	public String getLogin(@Query("para") String id);
+	public String getLogin(/*@Query("para") String id*/);
 	
 }

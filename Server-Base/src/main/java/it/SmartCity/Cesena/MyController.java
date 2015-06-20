@@ -66,7 +66,7 @@ public class MyController {
 	 
 	 
 	 @RequestMapping(value="/locazione/getposti", method=RequestMethod.GET)
-	    public @ResponseBody Collection<String> getAllGeo(
+	    public @ResponseBody ArrayList<String> getAllGeo(
 	    		/*@RequestParam("stringa") String stringa*/
 	    		) throws SQLException {
 		 
@@ -132,8 +132,8 @@ public class MyController {
 	 
 		@RequestMapping(value="/pag1", method=RequestMethod.GET)
 		public @ResponseBody String simpleGet()throws SQLException {
-			// Strings aren't auto-converted to JSON
-			return "You called simpleGet";
+			
+			return "YousimpleGet";
 		}
 	 
 	 

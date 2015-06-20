@@ -55,7 +55,7 @@ private ClientSvcApi videoSvc = new RestAdapter.Builder()
 				//ciao.setText(s.toString());
 					String username=uno.getText().toString();
 					String passw="bla";
-					String a=videoSvc.getLogin(username);//simpleGet();//getQuery("ok");
+					String a=videoSvc.getLogin(/*username*/);//simpleGet();//getQuery("ok");
 					Toast.makeText(getApplicationContext(),""+a+"", Toast.LENGTH_SHORT).show();
 					
 				}catch(Exception e){
