@@ -46,7 +46,7 @@ public class WelcomeActivity extends Activity
 				{
 					Intent i=new Intent(WelcomeActivity.this,NewProfileActivity.class);
 					startActivity(i);
-					WelcomeActivity.this.finish();
+					//WelcomeActivity.this.finish();
 				}
 			});
 	        
@@ -72,6 +72,7 @@ public class WelcomeActivity extends Activity
 				@Override
 				public void onClick(View arg0) 
 				{
+					
 					Intent i=new Intent(WelcomeActivity.this,MapActivity.class);
 					startActivity(i);
 					//WelcomeActivity.this.finish();

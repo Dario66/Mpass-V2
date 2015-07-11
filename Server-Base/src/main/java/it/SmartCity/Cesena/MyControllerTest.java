@@ -64,4 +64,11 @@ public class MyControllerTest {
 		assertTrue(Location.equals(results));
 		
 	}
+	@Test
+	public void TestsimplePost() throws SQLException{
+		MyController c=new MyController();
+		String j;
+		j=c.simplePost("123");
+		assertEquals("okPost", j);
+	}
 }

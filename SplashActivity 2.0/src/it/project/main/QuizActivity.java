@@ -1,16 +1,37 @@
 package it.project.main;
 
 import it.project.main.log.LogDbManager;
+import it.project.main.utils.GPSTracker;
 
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+
+import org.osmdroid.DefaultResourceProxyImpl;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
+
+import retrofit.http.POST;
 
 import com.example.fstest.R;
 
+import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -44,9 +65,6 @@ public class QuizActivity extends Activity
 		setContentView(R.layout.activity_quiz);
 		
 		user=new User(this);
-		
-		
-		
 		RelativeLayout rl=(RelativeLayout) findViewById(R.id.quiz_layout);
 		rl.setGravity(Gravity.CENTER_HORIZONTAL);
 		
@@ -106,9 +124,7 @@ public class QuizActivity extends Activity
 			@Override
 			public void onClick(View v) 
 			{
-				spinner.setMessage("Caricamento...");
-				spinner.setCancelable(false);
-				spinner.show();
+				
 				int quiz1 = getRadioGroupResult(11);
 				int quiz2 = getRadioGroupResult(12);
 				int quiz3 = getRadioGroupResult(13);
@@ -166,29 +182,55 @@ public class QuizActivity extends Activity
 				   case 1:squiz5="No";
 				   default:break;
 				}
-				final String comment_txt=getCommentText(51);
-				//String query_txt="INSERT INTO 1JvwJIV2DOSiQSXeSCj8PA8uKuSmTXODy3QgikiQ (name, geo, accessLevel, comment, doorways, elevator, escalator, parking) ";
-				//query_txt=query_txt+"VALUES ('"+name+"', '"+geo+"', '"+squiz1+"', '"+comment_txt+"', '"+squiz2+"', '"+squiz3+"', '"+squiz4+"', '"+squiz5+"')";
-				//Log.d("Test", query_txt);
-				Date date=new Date();
-				SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String sdate=dateFormat.format(date);
-				date_for_log=sdate;
-				action_for_log="Submitted a report about "+name+"."; //Così non vengono sostituiti i caratteri speciali per le richieste http e viene salvato il nome giusto nel log
-				name=name.replace("'", "");
-				name=name.replace("&","%26");
-				String query_txt="INSERT INTO "+Costants.tableId+" (name, fsqid, geo, accessLevel, comment, doorways, elevator, escalator, parking, user, date) ";
-				query_txt=query_txt+"VALUES ('"+name+"', '"+fsqid+"', '"+geo+"', '"+squiz1+"', '"+comment_txt+"', '"+squiz2+"', '"+squiz3+"', '"+squiz4+"', '"+squiz5+"', '"+user.getName()+"', '"+sdate+"')";
-				//Creo le stringhe per l'azione da mettere nel log, la inserisco dopo solo se l'insert ha avuto successo
-				//Log.d("Debug", query_txt);
 				
-				//Quindi se siamo connessi a foursquare e la venue è all'interno del db di foursquare
+				final String comment_txt=getCommentText(51);
 			
+				GPSTracker u = new GPSTracker(QuizActivity.this);
+				String y = ""+u.getLatitude()+","+u.getLongitude()+"";
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				Date date = new Date();
+				//System.out.println(); //2014/08/06 15:59:48
+				
+				ArrayList<String> list_tot= new ArrayList<String>();
+				list_tot.add(0,squiz1);//access level
+				list_tot.add(1,squiz2);//doorways
+				list_tot.add(2,squiz3);//elevator
+				list_tot.add(3,squiz4);//escaletor
+				list_tot.add(4,squiz5);//parking
+				list_tot.add(5,comment_txt);//comment
+				list_tot.add(6,y);
+				list_tot.add(7, dateFormat.format(date).toString());
+		
+		//System.out.println(dateFormat.format(cal.getTime())); //2014/08/06 16:00:22
+				if(isOnline()||Verify.isLocationEnabled(QuizActivity.this)||Verify.isConnectedToServer()){
+				try{
+					
+					
+	        		new TaskHttp(QuizActivity.this,4,list_tot){//4 nuova richiesta da implementare
+					
+				    public void onPostExecute(ArrayList<String> result) {
+				    	
+				    	Glob.statusDialog.dismiss();
+				    	//Toast.makeText(QuizActivity.this, result.get(0).toString();, Toast.LENGTH_LONG).show();	
+				     }
+				}.execute("");
+	        		}catch(Exception e){
+	        		//	Toast.makeText(QuizActivity.this, e.getCause().toString(), Toast.LENGTH_LONG).show();	
+	        		}
+				}else{
+					Toast.makeText(QuizActivity.this, "abilitare il GPS o la connessione internet..", Toast.LENGTH_LONG).show();	
+					
+				}
 			}
 		});
 		rl.addView(btn_submit);
 	}
-
+	public boolean isOnline() {
+        ConnectivityManager cm =(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) 
 	{

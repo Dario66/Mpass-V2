@@ -3,6 +3,8 @@ package it.project.main;
 import it.project.main.utils.GPSTracker;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.views.overlay.ItemizedIconOverlay.OnItemGestureListener;
 import com.example.fstest.R;
 import android.app.Activity;
@@ -23,7 +26,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,6 +62,8 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -64,36 +73,18 @@ import android.widget.Toast;
 public class MapActivity extends Activity
 {
 //kkkk
-	private static final String SERVER = "192.168.1.105:8080";
-	private static final String SERVER2 = "https://10.100.107.198:8443";
+	private static final String URL_check = "http://192.168.1.101:8080";
+	//private static final String SERVER2 = "https://10.100.107.198:8443";
 	ProgressBar progressBar;
-    
+    private ArrayList<String> results;
     int progressValue = 0;
-
 	TextView ciao;
-	
-	/*private ClientSvcApi videoSvc = new RestAdapter.Builder()
-	
-	.setServer(SERVER).build()
-	.create(ClientSvcApi.class);*/
-	
-	
-	
-	
-	
 	private GPSTracker gps;
-	
-	
-	
-	
 	private MapView myOpenMapView;
 	private MapController myMapController;
-	
-	
-	
 	private ArrayList<OverlayItem> Marker;
 	private MyLocationOverlay myLocationOverlay = null;
-	
+	private ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay;
 	//private ProgressDialog spinner;
     private Context context;
     private boolean[] preferences;
@@ -120,19 +111,44 @@ public class MapActivity extends Activity
         StrictMode.ThreadPolicy policy = 
         		new StrictMode.ThreadPolicy.Builder().permitAll().build();
         	StrictMode.setThreadPolicy(policy);
+        	GPSTracker u = new GPSTracker(MapActivity.this);
+        	
+        	
         
-        
+        	this.results=new ArrayList<String>();
         	 myOpenMapView = (MapView)findViewById(R.id.openmapview);
              myOpenMapView.setBuiltInZoomControls(true);
              myMapController = myOpenMapView.getController();
-             myMapController.setZoom(2);
+             myMapController.setZoom(5);
              myOpenMapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
              
              
              myLocationOverlay = new MyLocationOverlay (this, myOpenMapView);  
              myOpenMapView.getOverlays().add(myLocationOverlay);
              myOpenMapView.postInvalidate();
-        
+             
+             if(Verify.isLocationEnabled(MapActivity.this)&&isOnline()||Verify.isConnectedToServer()){
+            	 Toast.makeText(MapActivity.this, "gps abilitato", Toast.LENGTH_SHORT).show();
+ 			//String y = ""+u.getLatitude()+","+u.getLongitude()+"";
+         	Location l = u.getLocation();
+         	
+         	double a=u.getLatitude();
+         	double b=u.getLongitude();
+         	Marker = new ArrayList<OverlayItem>();
+	         Marker.add(new OverlayItem(
+	         		"0, 0", "0, 0", new GeoPoint(a, b)));
+	         ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay 
+		     	= new ItemizedIconOverlay<OverlayItem>(
+		     			MapActivity.this, Marker, myOnItemGestureListener);
+		     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
+		     ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(MapActivity.this);
+		     myOpenMapView.getOverlays().add(myScaleBarOverlay);
+             myMapController.setCenter(new GeoPoint(l));        
+             myMapController.setZoom(11);
+             
+             }else{
+            	 Toast.makeText(MapActivity.this, "verificare di aver abilitato il GPS e la connessione internet.", Toast.LENGTH_SHORT).show();
+             }
         context=this;
         
         
@@ -150,13 +166,15 @@ public class MapActivity extends Activity
 			@Override
 			public void onClick(View arg0) 
 			{
+				
+				
+				
 				Intent i=new Intent(MapActivity.this, QuizActivity.class);
 				startActivity(i);
 				
+				/*
 				
-				
-				
-				
+				*/
 				//RICHIESTA HTTP PER RICEVERE I DATI DI GEOLOCALIZAZZIONE SOTTOFORMA DI STRINGHE
 				//QUESTO ESEMPIO RICEVE UNA STRINGA
 		/*		try{
@@ -169,20 +187,11 @@ public class MapActivity extends Activity
 			}*/
 				
 				//tu(arg0);
-			
 				
 				}
 			
 		});
 		
-		
-		 
-		 myOpenMapView = (MapView)findViewById(R.id.openmapview);
-	        myOpenMapView.setBuiltInZoomControls(true);
-	        myMapController = myOpenMapView.getController();
-	        myMapController.setZoom(3);
-	        
-	        myOpenMapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
 
 		
         gps=new GPSTracker(this);
@@ -193,8 +202,6 @@ public class MapActivity extends Activity
         ViewGroup mapHost = (ViewGroup) findViewById(R.id.mapView);
         mapHost.requestTransparentRegion(mapHost);
     }
-    
-    
     
     OnItemGestureListener<OverlayItem> myOnItemGestureListener
     = new OnItemGestureListener<OverlayItem>(){
@@ -237,15 +244,6 @@ public class MapActivity extends Activity
         return address;
     } 
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
 	
 	//PROCEDURA CHE RICEVE UNA STRINGA IN INGRESSO DEL TIPO 123.543,123.123
 	// UNA PARTE DELLA FUNZIONE ESTRAPOLA LA PARTE PRIMA DELLA VIRGOLA E LA CONVERTE IN DOUBLE
@@ -280,6 +278,12 @@ public class MapActivity extends Activity
    				piu.add(1,yr2);
    				return piu;
    	}
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -293,15 +297,56 @@ public class MapActivity extends Activity
         switch (item.getItemId()) 
         {
         	case R.id.item_filter:
-        		
-        		new TaskHttp(MapActivity.this,0){
+        		try{
+        		new TaskHttp(MapActivity.this,3){
 				
 			    public void onPostExecute(ArrayList<String> result) {
-			    	Toast.makeText(MapActivity.this, ""+result.get(0).toString()+"", Toast.LENGTH_LONG).show();
+			    	
+			    		Toast.makeText(MapActivity.this, "ok f", Toast.LENGTH_LONG).show();	
+			    	
+			    		
+			    		
+			    	//Toast.makeText(MapActivity.this, ""+result.get(0).toString()+"", Toast.LENGTH_LONG).show();
+			    	//MapActivity.this.results=result;
 			    	Glob.statusDialog.dismiss();
 			     }
-			}.execute(t);
-        					      break;
+			}.execute("");
+        		}catch(Exception e){
+        			Toast.makeText(MapActivity.this, e.getCause().toString(), Toast.LENGTH_LONG).show();	
+        		}
+			
+			ArrayList<String> prov=new ArrayList<String>();
+			prov.add(0,"44.355164");
+			prov.add(1,"11.711669");
+			//METODO PER CONVERTIRE
+    		/*	try{
+				sfornato=this.results; 
+				}catch(Exception e){
+					//ciao.setText(e.toString());
+					Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
+				}
+			for (String e : sfornato) {
+				ArrayList<Double> ex=tu(e);
+				lon= Double.valueOf(prov.get(0));//ex.get(0);
+				lat=Double.valueOf(prov.get(1));//ex.get(1);
+				
+				 //Marker = new ArrayList<OverlayItem>();
+		         this.Marker.add(new OverlayItem(
+		         		"0, 0", "0, 0", new GeoPoint(lat, lon)));
+		         ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay 
+			     	= new ItemizedIconOverlay<OverlayItem>(
+			     			MapActivity.this, Marker, myOnItemGestureListener);
+			     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
+			     ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(MapActivity.this);
+			     myOpenMapView.getOverlays().add(myScaleBarOverlay);
+		         
+			     
+			}
+	     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
+	     myOpenMapView.getOverlays().add(myLocationOverlay);
+	     myOpenMapView.postInvalidate();*/
+						   break;
+        					      
         	case R.id.item_mapmenu:Intent profile_intent=new Intent(MapActivity.this, ProfileActivity.class);
         						   startActivity(profile_intent);
         						   break;
@@ -316,43 +361,56 @@ public class MapActivity extends Activity
 										switch (item.getItemId()) 
 										{
 											case R.id.item_all:
-												
-												
-												new TaskHttp(MapActivity.this,0){
+												if(Verify.isConnectedToServer()||Verify.isLocationEnabled(MapActivity.this)||isOnline()){
+												try{
+									        		new TaskHttp(MapActivity.this,1){
 													
-												    public void onPostExecute(String result) {
-												    	Toast.makeText(MapActivity.this, ""+result+"", Toast.LENGTH_LONG).show();
+												    public void onPostExecute(ArrayList<String> result) {
+												    	
+												    		
+												    		//MapActivity.this.results=result;
+												    		sfornato=new ArrayList<String>();
+												    		sfornato =result;
+												    		 ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+												    		 ArrayList<Double> ex;
+												    		 for(String a:sfornato){
+												    			 ex=tu(a);
+																lon=ex.get(0);
+																lat=ex.get(1);
+												    	     items.add(new OverlayItem("1", "2", new GeoPoint(lat, lon)));
+												    		 }
+												    	     DefaultResourceProxyImpl resourceProxy = new DefaultResourceProxyImpl(getApplicationContext());
+												    	     
+												    	     anotherItemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(items,
+												    	             new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+												    	                 @Override
+												    	                 public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+												    	                     Toast.makeText( getApplicationContext(), "Overlay Titled: " +
+												    	item.mTitle + " Single Tapped" + "\n" + "Description: " + item.mDescription, Toast.LENGTH_LONG).show();
+												    	                     return true; 
+												    	                 }
+												    	                 @Override
+												    	                 public boolean onItemLongPress(final int index, final OverlayItem item) {
+												    	                     Toast.makeText( getApplicationContext(), "Overlay Titled: " + 
+												    	item.mTitle + " Long pressed" + "\n" + "Description: " + item.mDescription ,Toast.LENGTH_LONG).show();
+												    	                     return false;
+												    	                 }
+												    	             }, resourceProxy);
+												    	     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
+												    	     myOpenMapView.invalidate();
+															 myMapController.setZoom(5);
+												    	     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+												    	//Toast.makeText(MapActivity.this, ""+result.get(0).toString()+"", Toast.LENGTH_LONG).show();
+												    	//MapActivity.this.results=result;
 												    	Glob.statusDialog.dismiss();
 												     }
-												}.execute(t);
-															   //spinner.show();
-												/*try{
-													sfornato=videoSvc.getAllLocation(); 
-													}catch(Exception e){
-														//ciao.setText(e.toString());
-														Toast.makeText(getApplicationContext(), e.getCause().toString(), Toast.LENGTH_SHORT).show();
-													}
-												for (String e : sfornato) {
-													ArrayList<Double> ex=tu(e);
-													lon=ex.get(0);
-													lat=ex.get(1);
-													
-													 Marker = new ArrayList<OverlayItem>();
-											         Marker.add(new OverlayItem(
-											         		"0, 0", "0, 0", new GeoPoint(lat, lon)));
-											         ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay 
-												     	= new ItemizedIconOverlay<OverlayItem>(
-												     			MapActivity.this, Marker, myOnItemGestureListener);
-												     myOpenMapView.getOverlays().add(anotherItemizedIconOverlay);
-												     ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(MapActivity.this);
-												     myOpenMapView.getOverlays().add(myScaleBarOverlay);
-											         
-												     
-												}
-										     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
-										     myOpenMapView.getOverlays().add(myLocationOverlay);
-										     myOpenMapView.postInvalidate();
-															   break;*/
+												}.execute("");
+									        		}catch(Exception e){
+									        			Toast.makeText(MapActivity.this, e.getCause().toString(), Toast.LENGTH_LONG).show();	
+									        		}}else{
+									        			Toast.makeText(MapActivity.this,"server non raggiungibile..", Toast.LENGTH_LONG).show();	
+									        		}
+															   break;
 											case R.id.item_limit:
 																
 												
@@ -368,6 +426,7 @@ public class MapActivity extends Activity
 													}
 												//Toast.makeText(getApplicationContext(), ""+sfornato.get(2).toString()+"", Toast.LENGTH_SHORT).show();
 												int conta=0;
+												sfornato.add("dsd");
 												for (String e : sfornato) {
 													if(conta==20){break;}
 												
@@ -391,7 +450,7 @@ public class MapActivity extends Activity
 										     myLocationOverlay = new MyLocationOverlay(MapActivity.this, myOpenMapView);
 										     myOpenMapView.getOverlays().add(myLocationOverlay);
 										     myOpenMapView.postInvalidate();
-											    
+										     
 												
 												
 												
@@ -404,14 +463,19 @@ public class MapActivity extends Activity
         						   });
         						   popup.show();
         						   break;
-        	case R.id.item_list:Intent list_intent=new Intent(MapActivity.this, VenueListActivity.class);
-			   					startActivity(list_intent);
+        	case R.id.item_list:
+        		
+        		
+        		
+        		
+        	/*Intent list_intent=new Intent(MapActivity.this, VenueListActivity.class);
+			   					startActivity(list_intent);*/
 			   					break;
         	default:break;
         }
         return true;
     }
-
+   
     @Override
    	protected void onResume() {
    		// TODO Auto-generated method stub

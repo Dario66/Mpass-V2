@@ -1,5 +1,7 @@
 package it.project.main;
 
+import java.util.ArrayList;
+
 import retrofit.RestAdapter;
 
 import com.example.fstest.R;
@@ -30,7 +32,7 @@ public class LoginActivity extends Activity {
 	
 private ClientSvcApi videoSvc = new RestAdapter.Builder()
 	
-	.setServer(SERVER).build()
+	.setEndpoint(SERVER).build()
 	.create(ClientSvcApi.class);
 
 	@Override
@@ -50,12 +52,40 @@ private ClientSvcApi videoSvc = new RestAdapter.Builder()
 	
 	public void Login(View v){
 		
+		
+		try{
+    		new TaskHttp(LoginActivity.this,2){
+			
+		    public void onPostExecute(ArrayList<String> result) {
+		    	
+		    	String q=result.get(0);
+		    	if(q.equals("presente")){
+		    		Toast.makeText(LoginActivity.this, "nome valido", Toast.LENGTH_LONG).show();
+		    	}
+		    	else{
+		    		Toast.makeText(LoginActivity.this, "nome non presente", Toast.LENGTH_LONG).show();
+		    	}
+		    			
+		    	
+		    		
+		    		
+		    	//Toast.makeText(MapActivity.this, ""+result.get(0).toString()+"", Toast.LENGTH_LONG).show();
+		    	//MapActivity.this.results=result;
+		    	Glob.statusDialog.dismiss();
+		     }
+		}.execute("sd");
+    		}catch(Exception e){
+    			Toast.makeText(LoginActivity.this, e.getCause().toString(), Toast.LENGTH_LONG).show();	
+    		}
+		
+		
+		
 			try{
 				//String s = videoSvc.getVideoList();
 				//ciao.setText(s.toString());
 					String username=uno.getText().toString();
 					String passw="bla";
-					String a=videoSvc.getLogin(/*username*/);//simpleGet();//getQuery("ok");
+					String a=videoSvc.getLogin("nome", "cognome");//simpleGet();//getQuery("ok");
 					Toast.makeText(getApplicationContext(),""+a+"", Toast.LENGTH_SHORT).show();
 					
 				}catch(Exception e){
